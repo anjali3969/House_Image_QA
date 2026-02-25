@@ -1,0 +1,1944 @@
+{
+  "name": "vision",
+  "created_at": "2026-02-18T21:32:44.001090",
+  "model_used": "gemini-2.5-pro",
+  "structure": "room_based_levels",
+  "global_questions": {
+    "1": [
+      {
+        "id": "3",
+        "text": "How many turns are there in the stairs to this level?",
+        "type": "RADIO",
+        "options": [
+          "No turns or slight curve",
+          "1 or more turns",
+          "Spiral stairs",
+          "No stairs at the time of measure"
+        ],
+        "pln_variable": "AccessData.StairTurns",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 1.0,
+        "reasoning": "A single photo might not capture the full extent of the staircase from top to bottom, potentially hiding turns or landings. A complete answer often requires multiple views or a very specific wide-angle shot.",
+        "threshold": 0.6
+      },
+      {
+        "id": "5",
+        "text": "What type of exterior area is it (Only if the room name is one of the following: SUN RM, PORCH, POOL RM, DECK, PATIO, LANAI)?",
+        "type": "RADIO",
+        "options": [
+          "Exposed (outdoor)",
+          "Enclosed w/o Heat",
+          "Enclosed with Heat"
+        ],
+        "pln_variable": "misc3.enclosed",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 1.0,
+        "reasoning": "The visual differences between a sunroom, porch, deck, and patio are significant and central to the area's identity. These are typically easily identifiable from a single representative photograph.",
+        "threshold": 0.8
+      },
+      {
+        "id": "7",
+        "text": "What type of room is this (New Construction: Does the image consist of wood beams and unfinished walls and floors. Remodel: Is their visible indication of a remodel? Missing walls, patched floors, one unfinished area. Floor Change Only: No visible indication of remodel or new construction as listed above.) ?",
+        "type": "RADIO",
+        "options": [
+          "New Construction",
+          "Remodel",
+          "Floor Change only"
+        ],
+        "pln_variable": "remodel.jobType",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 1.0,
+        "reasoning": "The categories (New Construction, Remodel, etc.) are defined by strong, large-scale visual evidence like unfinished walls, patched floors, or the lack thereof. These states are generally obvious in a single image of the room.",
+        "threshold": 0.8
+      },
+      {
+        "id": "11",
+        "text": "What material is currently used on the floor?",
+        "type": "RADIO",
+        "options": [
+          "Clear",
+          "Carpet",
+          "Vinyl/Luan",
+          "Vinyl",
+          "Wood",
+          "Ceramic",
+          "Laminate",
+          "Tackless Strip exposed",
+          "Vinyl Tile/Plank",
+          "Luan",
+          "Slate/Natural Stone",
+          "Marble",
+          "Particle Board",
+          "Pad-Carpet Removed"
+        ],
+        "pln_variable": "existingFloor.type1",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 1.0,
+        "reasoning": "The floor material is a large, prominent feature with distinct visual characteristics (texture, pattern, sheen). It is almost always visible and identifiable in a standard room photograph.",
+        "threshold": 0.9
+      },
+      {
+        "id": "35",
+        "text": "What is the base floor made of?",
+        "type": "RADIO",
+        "options": [
+          "Rough Plywood",
+          "Finished Plywood",
+          "Flake Board/OSB",
+          "Particle Board",
+          "Plank Wood",
+          "Terrazzo",
+          "Concrete",
+          "Softcrete",
+          "Brick/Pavers",
+          "Decking",
+          "Masonite",
+          "Wood (Can't tell type)"
+        ],
+        "pln_variable": "subfloor",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "not_visible",
+        "llm_confidence": 1.0,
+        "reasoning": "The base floor, or subfloor (e.g., concrete, plywood), is located underneath the visible finished flooring layer and cannot be observed without removing the top flooring material.",
+        "threshold": 0.9
+      },
+      {
+        "id": "48",
+        "text": "What type of furniture is there in the room (Light - Can this be moved by one male with a medium build and above average strength; Heavy - Does this require more than one male with a medium build and above average strength to move the item)?",
+        "type": "RADIO",
+        "options": [
+          "None",
+          "Light (Movable by 2 people)",
+          "Heavy (Need more than 2 people)"
+        ],
+        "pln_variable": "misc.furniture",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "user",
+        "llm_confidence": 0.9,
+        "reasoning": "While the type of furniture is visible, its weight is not a direct visual property. It depends on unseen factors like material density and contents. The definition of 'light' vs 'heavy' is subjective and best answered by the user.",
+        "threshold": 0.9
+      },
+      {
+        "id": "53",
+        "text": "What type of molding is around the walls?",
+        "type": "RADIO",
+        "options": [
+          "Base Only",
+          "Base and Shoe",
+          "Shoe Only",
+          "Base/Shoe Combo",
+          "6 inch vinyl Cove",
+          "4 inch vinyl Cove",
+          "2 1/2 inch vinyl Cove",
+          "Ceramic Base",
+          "Flash Cove around Wall",
+          "Carpet Base",
+          "None"
+        ],
+        "pln_variable": "misc.moldingType",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.85,
+        "reasoning": "Identifying the style of molding (e.g., baseboard, crown, chair rail) is a visual classification task. However, it requires a clear, unobstructed view of the molding, which may not be available or may lack detail in a general room photo.",
+        "threshold": 0.7
+      },
+      {
+        "id": "58",
+        "text": "Is there ceramic installed on the wall (above the base)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "prep.flags3.ceramicWalls",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "The presence of ceramic tile on a wall is a highly distinct visual feature, characterized by grout lines, specific textures, and patterns. This is a standard material identification task that is reliable with a clear view of the wall.",
+        "threshold": 0.8
+      },
+      {
+        "id": "59",
+        "text": "What type of molding is around the cabinets?",
+        "type": "RADIO",
+        "options": [
+          "Base Only",
+          "Base and Shoe",
+          "Shoe Only",
+          "Base/Shoe Combo",
+          "6 inch vinyl Cove",
+          "4 inch vinyl Cove",
+          "2 1/2 inch vinyl Cove",
+          "Ceramic Base",
+          "Flash Cove around cabinets",
+          "Carpet Base",
+          "None"
+        ],
+        "pln_variable": "misc3.cabMoldingType",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.85,
+        "reasoning": "Identifying the type of molding on cabinets is a visual task. Its success depends on having a clear and sufficiently close view of the cabinets and their trim, which a single photo may not provide.",
+        "threshold": 0.7
+      },
+      {
+        "id": "60",
+        "text": "What are the type of heat/air is in the room?",
+        "type": "RADIO",
+        "options": [
+          "No Vents",
+          "Floor Vents",
+          "Baseboard/Wall Vents",
+          "Radiator",
+          "Radiant Heat (in Subfloor)",
+          "Baseboard heat",
+          "Ceiling Vents"
+        ],
+        "pln_variable": "misc2.heatAir",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.9,
+        "reasoning": "The common types of heating and air conditioning systems have distinct visual components, such as vents, registers, radiators, baseboard heaters, or wall-mounted mini-split units. These are typically visible and identifiable in a photo of the room.",
+        "threshold": 0.8
+      },
+      {
+        "id": "64",
+        "text": "How many appliances are there in the room (if the room is Kitchen, Bath or Laundry)?",
+        "type": "RADIO",
+        "options": [
+          "None",
+          "One",
+          "Two",
+          "Three",
+          "Four",
+          "Five",
+          "Six",
+          "Seven",
+          "Eight",
+          "Nine"
+        ],
+        "pln_variable": "misc.appliances",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "Counting appliances is a visual identification task. However, the question asks for the total number in the room, and a single photograph may not capture the entire space. A complete and accurate count would require comprehensive views of the entire room.",
+        "threshold": 0.8
+      },
+      {
+        "id": "65",
+        "text": "Are there any Electrical outlet in the floor?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "floorRating.outletsInFloor",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "A floor outlet is a visible feature. However, confirming its presence or absence requires an unobstructed view of the entire floor, which may be covered by rugs, furniture, or other items.",
+        "threshold": 0.8
+      },
+      {
+        "id": "71",
+        "text": "Is there any water damage?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.waterDamage",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "Surface-level evidence of water damage, such as stains, discoloration, or peeling paint, is visually detectable. However, damage can exist within walls or under flooring, making it impossible to confirm its complete absence from a standard photograph.",
+        "threshold": 0.7
+      },
+      {
+        "id": "79",
+        "text": "Can you see the floor joists underneath?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "misc2.seeJoists",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 1.0,
+        "reasoning": "This is a direct question of observability. The floor joists are either visible in the photograph (e.g., in a view from a basement or during construction) or they are not. The answer can be determined directly and reliably from the image content.",
+        "threshold": 0.9
+      },
+      {
+        "id": "83",
+        "text": "Is there a drain in the room (asked for Kitchen or Bath or Laundry room)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "roomSpecific.drains",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "A floor drain is a visible object, but its visibility depends on the camera's angle and coverage of the floor or relevant fixtures (like a shower). It may not be captured in a single photo.",
+        "threshold": 0.7
+      },
+      {
+        "id": "84",
+        "text": "Are the cabinets on top of floorcovering?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "roomSpecific.cabOnTopOfFloor",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "This can be determined by visually inspecting the intersection of the cabinet base and the floor, but it requires a clear, close-up view which may not be available in a general room photo.",
+        "threshold": 0.8
+      },
+      {
+        "id": "85",
+        "text": "Is there hot water tank in the room?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "misc2.hotWaterTank",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 1.0,
+        "reasoning": "A hot water tank is a large, identifiable object. However, it might be located in a closet or utility area not visible in the initial photo, requiring a different view.",
+        "threshold": 0.6
+      },
+      {
+        "id": "124",
+        "text": "Is there a flash coving (Is the material that is installed on the floor also installed on the vertical toe-kick of the cabinets) under cabinet?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "roomSpecific.flashCoveCab",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 1.0,
+        "reasoning": "This is a visual check, but it requires a clear, close-up view of the cabinet toe-kick area, which may be occluded, in shadow, or not captured in a general room photo.",
+        "threshold": 0.7
+      },
+      {
+        "id": "160",
+        "text": "Is there visible red or colored waterproofing membrane (like RedGard) applied to the surface?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.waterproofing",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "A colored waterproofing membrane like RedGard is designed to be highly visible. If the surface is exposed and photographed, its presence or absence is clearly and reliably determinable.",
+        "threshold": 0.85
+      },
+      {
+        "id": "171",
+        "text": "Is this a standard metal frame, Four Poster bed, Iron/Brass frame, or Daybed?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "misc4.standardBed",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "The types of beds listed (standard metal frame, Four Poster, Iron/Brass, Daybed) are defined by their distinct visual structure and appearance, which can be reliably identified from a photo.",
+        "threshold": 0.85
+      },
+      {
+        "id": "172",
+        "text": "Are there any Bunk bed or Captain's bed that features a staircase or extensive built-in storage drawers/shelving?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "specialItems.canopyBunkBed",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "The presence of a Bunk bed, Captain's bed, a staircase, or extensive built-in storage are all large, structural, and visually prominent features that are easily identifiable in a photograph.",
+        "threshold": 0.85
+      },
+      {
+        "id": "173",
+        "text": "Is there a Platform bed, Sleigh bed, Trundle bed, or a simple Bunk/Captain's bed (with a ladder instead of stairs)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "misc4.complexPlusBed",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "The types of beds listed (Platform, Sleigh, Trundle, simple Bunk/Captain's) are all defined by their unique and visually recognizable shapes and features, making this a standard object classification task.",
+        "threshold": 0.85
+      },
+      {
+        "id": "174",
+        "text": "Is there a Waterbed, Loft bed, Canopy bed, or an Electronic/Adjustable bed (such as a hospital or sleep number bed)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "specialItems.waterbed",
+        "depends_on": [],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "While Loft and Canopy beds have very distinct visual profiles, Electronic/Adjustable beds may not have obvious external features in a standard photo. A definitive answer might require specific views of the bed's base or controls, making it potentially answerable but not always reliably from a single image.",
+        "threshold": 0.7
+      },
+      {
+        "id": "root__room_type",
+        "text": "What type of room is shown in the image?",
+        "type": "RADIO",
+        "options": [
+          "Basement",
+          "Kitchen",
+          "Laundry",
+          "Bathroom"
+        ],
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "llm_reasoning": "Room type is typically identifiable from context",
+        "threshold": 0.85,
+        "depends_on": [],
+        "room_type": "ROOT"
+      }
+    ],
+    "2": [
+      {
+        "id": "10",
+        "text": "Are there any slopes in the room (ask only for remodel)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "remodel.slopes",
+        "depends_on": [
+          {
+            "question_id": "7",
+            "equals_any": [
+              "Remodel"
+            ],
+            "llm_reasoning": "The question text for [10] explicitly states '(ask only for remodel)'."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 1.0,
+        "reasoning": "A significant slope might be visually apparent, but minor slopes can be imperceptible or masked/created by lens distortion and camera perspective. It is not reliably detectable from a single photo.",
+        "threshold": 0.5
+      },
+      {
+        "id": "24",
+        "text": "Is the vinyl embossed (Embossed indicates it has a textured surface pressed into it, mimicking natural grain, knots, and grooves for a realistic feel)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Light",
+          "Heavy"
+        ],
+        "pln_variable": "floorCond.emboss",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Vinyl Tile/Plank",
+              "Vinyl/Luan",
+              "Vinyl"
+            ],
+            "llm_reasoning": "Question [24] asks if vinyl is embossed, making it relevant only if the floor material from question [11] is a type of 'Vinyl'."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "Embossing is a surface texture. It can be detected in a photograph, but this is highly dependent on image resolution, lighting, and the angle of the shot. A close-up, well-lit image would be required.",
+        "threshold": 0.7
+      },
+      {
+        "id": "26",
+        "text": "Analyze the layout of the flooring. Is the installation style 'Linear' (Stripwood) or 'Patterned' (Parquet)",
+        "type": "RADIO",
+        "options": [
+          "Stripwood",
+          "Parquet"
+        ],
+        "pln_variable": "attached.floor1.stripWood",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Wood"
+            ],
+            "llm_reasoning": "Question [26] asks about wood-specific installation styles (Stripwood, Parquet), so it's only relevant if the floor material from question [11] is 'Wood'."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 1.0,
+        "reasoning": "The overall installation pattern of flooring (e.g., linear strips vs. a geometric parquet pattern) is a large-scale, prominent visual feature that is easily identifiable from a standard photo of the floor.",
+        "threshold": 0.9
+      },
+      {
+        "id": "30",
+        "text": "Are there any broken/missing tiles (if the current floor is Ceramic)? If yes, how many?",
+        "type": "RADIO",
+        "options": [
+          "None",
+          "Less than 10",
+          "10 or more middle",
+          "10 or more edges",
+          "Entire Floor"
+        ],
+        "pln_variable": "tilesMissing",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Ceramic"
+            ],
+            "llm_reasoning": "The question text for [30] explicitly states '(if the current floor is Ceramic)', which is an option in question [11]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "Broken or missing tiles are significant visual defects that are typically easy to identify and count from a clear photograph, provided the entire floor area is visible.",
+        "threshold": 0.8
+      },
+      {
+        "id": "31",
+        "text": "Are there any cracks (if the current floor is Ceramic)?",
+        "type": "RADIO",
+        "options": [
+          "None",
+          "Minor",
+          "Major"
+        ],
+        "pln_variable": "floorCond.cracks",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Ceramic"
+            ],
+            "llm_reasoning": "The question text for [31] explicitly states '(if the current floor is Ceramic)', which is an option in question [11]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "Cracks in ceramic tiles are visible defects, but their detectability is contingent on their size. Hairline cracks may require high-resolution or close-up images to be seen, while larger cracks are more obvious.",
+        "threshold": 0.7
+      },
+      {
+        "id": "49",
+        "text": "How much furniture is there in the room?",
+        "type": "RADIO",
+        "options": [
+          "Normal (1-5 pieces)",
+          "Excessive (6+ pieces)"
+        ],
+        "pln_variable": "misc3.furniturePieces",
+        "depends_on": [
+          {
+            "question_id": "48",
+            "equals_any": [
+              "Light (Movable by 2 people)",
+              "Heavy (Need more than 2 people)"
+            ],
+            "llm_reasoning": "Question [49] asks for the quantity of furniture, which is irrelevant if question [48] has established that there is 'None'."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.8,
+        "reasoning": "Counting visible furniture is a standard vision task. However, a single photograph is unlikely to capture the entire room, so a complete and accurate count of all furniture is not guaranteed. The answer depends heavily on the camera's field of view.",
+        "threshold": 0.7
+      },
+      {
+        "id": "54",
+        "text": "How is the base molding finished?",
+        "type": "RADIO",
+        "options": [
+          "Unfinished",
+          "Painted",
+          "Stained"
+        ],
+        "pln_variable": "prep.flags2.baseMoldingFinished",
+        "depends_on": [
+          {
+            "question_id": "53",
+            "equals_any": [
+              "Base/Shoe Combo",
+              "Base and Shoe",
+              "Base Only"
+            ],
+            "llm_reasoning": "Question [54] asks about the finish of base molding, so it should only be asked if base molding is present according to question [53]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.9,
+        "reasoning": "The finish of base molding (e.g., painted, stained, unfinished) is a prominent visual attribute. If the base molding is visible in the photograph, its finish can be clearly identified.",
+        "threshold": 0.8
+      },
+      {
+        "id": "55",
+        "text": "Is the base molding installed on top of the flooring?",
+        "type": "RADIO",
+        "options": [
+          "No (Usually grouted)",
+          "Yes (Usually caulked)"
+        ],
+        "pln_variable": "prep.flags3.moldingOnTopOfFloor",
+        "depends_on": [
+          {
+            "question_id": "53",
+            "equals_any": [
+              "Base/Shoe Combo",
+              "Base and Shoe",
+              "Base Only"
+            ],
+            "llm_reasoning": "Question [55] asks about the installation of base molding, so it should only be asked if base molding is present according to question [53]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.7,
+        "reasoning": "Determining if molding is installed over flooring requires a high-resolution, close-up view of the junction between the floor and the wall. This level of detail is possible to capture but is not guaranteed in a standard, wide-angle room photograph.",
+        "threshold": 0.8
+      },
+      {
+        "id": "56",
+        "text": "How is the shoe molding finished?",
+        "type": "RADIO",
+        "options": [
+          "Unfinished",
+          "Painted",
+          "Stained"
+        ],
+        "pln_variable": "prep.flags2.shoeMoldingFinished",
+        "depends_on": [
+          {
+            "question_id": "53",
+            "equals_any": [
+              "Base/Shoe Combo",
+              "Shoe Only",
+              "Base and Shoe"
+            ],
+            "llm_reasoning": "Question [56] asks about the finish of shoe molding, so it should only be asked if shoe molding is present according to question [53]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.75,
+        "reasoning": "Similar to base molding, the finish of shoe molding is a visual attribute. However, shoe molding is a small detail, and a clear, well-lit view is necessary for identification, which may not be available in every photo.",
+        "threshold": 0.7
+      },
+      {
+        "id": "61",
+        "text": "If there is a Radiator in the room, Enter the number of radiator legs?",
+        "type": "NUMBER",
+        "options": [],
+        "pln_variable": "radiatorholes.legs",
+        "depends_on": [
+          {
+            "question_id": "60",
+            "equals_any": [
+              "Radiator"
+            ],
+            "llm_reasoning": "The question text for [61] explicitly states 'If there is a Radiator in the room', which is an option in question [60]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.95,
+        "reasoning": "Counting radiator legs is a visual task. However, a single photo may not capture the entire unit, and some legs could be occluded by the radiator itself or other furniture, requiring multiple or specific views for a complete count.",
+        "threshold": 0.7
+      },
+      {
+        "id": "62",
+        "text": "If there is a Radiator in the room, Enter the number of radiator pipes?",
+        "type": "NUMBER",
+        "options": [],
+        "pln_variable": "radiatorholes.pipes",
+        "depends_on": [
+          {
+            "question_id": "60",
+            "equals_any": [
+              "Radiator"
+            ],
+            "llm_reasoning": "The question text for [62] explicitly states 'If there is a Radiator in the room', which is an option in question [60]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.95,
+        "reasoning": "Radiator pipes are visible components, but they are typically located on one side or at the back of the unit. Their visibility is entirely dependent on the camera angle; a single photo might not show the connection points.",
+        "threshold": 0.7
+      },
+      {
+        "id": "67",
+        "text": "How are the wood sheets attached?",
+        "type": "RADIO",
+        "options": [
+          "Can't tell",
+          "Nailed",
+          "Screwed",
+          "Stapled"
+        ],
+        "pln_variable": "subfloorAttached",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Finished Plywood",
+              "Flake Board/OSB",
+              "Particle Board",
+              "Rough Plywood",
+              "Wood (Can't tell type)"
+            ],
+            "llm_reasoning": "Question [67] asks how wood sheets are attached, which is relevant if the base floor (subfloor) is identified as a type of wood sheet/board in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.85,
+        "reasoning": "The method of attachment (e.g., nails, screws) can be determined if the fasteners are visible. However, this depends on high image resolution and proximity. Fasteners may also be intentionally concealed (e.g., filled, painted over, or blind-nailed).",
+        "threshold": 0.7
+      },
+      {
+        "id": "86",
+        "text": "Is there damage around the hot water tank (if present)",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "roomSpecific.hotWaterTankWaterDamage",
+        "depends_on": [
+          {
+            "question_id": "85",
+            "equals_any": [
+              "Yes"
+            ],
+            "llm_reasoning": "The question text for [86] explicitly states '(if present)', which refers to the presence of a hot water tank confirmed in question [85]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 1.0,
+        "reasoning": "Water damage, rust, or corrosion are visual indicators. Answering requires a clear, and potentially close-up, view of the tank and the floor/walls surrounding it, if the tank is visible.",
+        "threshold": 0.7
+      },
+      {
+        "id": "155",
+        "text": "Are there signs of Open seams?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "floorCond.openSeam",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Vinyl Tile/Plank",
+              "Vinyl/Luan",
+              "Vinyl"
+            ],
+            "llm_reasoning": "Question [155] asks about open seams, a common issue with sheet flooring like vinyl. This is relevant if the floor material in question [11] is a type of vinyl."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "An open seam in flooring or wallpaper is a visual defect. However, it can be a fine detail that requires a high-resolution or close-up photo with good lighting to be detected.",
+        "threshold": 0.7
+      },
+      {
+        "id": "156",
+        "text": "Are there signs of Curling seams?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "floorCond.cracks",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Vinyl Tile/Plank",
+              "Vinyl/Luan",
+              "Vinyl"
+            ],
+            "llm_reasoning": "Question [156] asks about curling seams, a common issue with sheet flooring like vinyl. This is relevant if the floor material in question [11] is a type of vinyl."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "Curling seams are a visual defect, identifiable by the lifting of material and associated shadows. Detection is possible but depends on image resolution, lighting, and camera angle.",
+        "threshold": 0.7
+      },
+      {
+        "id": "157",
+        "text": "Do you see any bubbles or air pockets trapped beneath the vinyl surface?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "floorCond.bubbles",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Vinyl Tile/Plank",
+              "Vinyl/Luan",
+              "Vinyl"
+            ],
+            "llm_reasoning": "The question text for [157] explicitly refers to a 'vinyl surface', making it dependent on the floor material in question [11] being vinyl."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "Bubbles or air pockets under vinyl flooring are visible as surface deformities. Detecting them is a visual task, but may require specific lighting or angles to see the subtle bumps.",
+        "threshold": 0.7
+      },
+      {
+        "id": "158",
+        "text": "Is the outline or texture of the underlayment telegraphing (showing through) the vinyl surface?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "floorCond.vinylTelegraph",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Vinyl Tile/Plank",
+              "Vinyl/Luan",
+              "Vinyl"
+            ],
+            "llm_reasoning": "The question text for [158] explicitly refers to a 'vinyl surface', making it dependent on the floor material in question [11] being vinyl."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.9,
+        "reasoning": "Telegraphing, where the subfloor texture shows through the vinyl, is a purely visual effect. It can be very subtle and often requires low-angle lighting to be noticeable, making it possible but not guaranteed to see in a standard photo.",
+        "threshold": 0.6
+      },
+      {
+        "id": "159",
+        "text": "Are there visible outlines of nail or screw heads protruding or pushing up against the vinyl?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "floorCond.vinylNailShow",
+        "depends_on": [
+          {
+            "question_id": "11",
+            "equals_any": [
+              "Vinyl Tile/Plank",
+              "Vinyl/Luan",
+              "Vinyl"
+            ],
+            "llm_reasoning": "The question text for [159] explicitly refers to 'vinyl', making it dependent on the floor material in question [11] being vinyl."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.8,
+        "reasoning": "Detecting subtle outlines or protrusions from nail/screw heads under vinyl requires a high-resolution, close-up image, possibly with specific raking light. A general room photo may not have the detail or angle to reveal this.",
+        "threshold": 0.7
+      },
+      {
+        "id": "161",
+        "text": "Are there visual signs of moisture, such as damp spots, discoloration, or efflorescence (white powdery residue) (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.moisture",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [161] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.9,
+        "reasoning": "Damp spots, discoloration, and efflorescence are all distinct visual artifacts that are readily identifiable in a clear photograph of a concrete surface, assuming the area is not obscured.",
+        "threshold": 0.8
+      },
+      {
+        "id": "162",
+        "text": "Does the surface texture appear rough, coarse, or gritty (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.rough",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [162] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.9,
+        "reasoning": "Surface texture is a key visual feature. The roughness, coarseness, or grittiness of a surface can be assessed from a high-quality image that shows how light interacts with the surface.",
+        "threshold": 0.75
+      },
+      {
+        "id": "163",
+        "text": "Does the floor look wavy, uneven, or sloped in specific sections (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.uneven",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [163] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.7,
+        "reasoning": "While severe waviness or slopes might be inferred from distorted lines or reflections, accurately assessing these large-scale geometric properties from a single 2D photo is unreliable. It's possible with the right view, but not guaranteed.",
+        "threshold": 0.6
+      },
+      {
+        "id": "164",
+        "text": "Does the floor look Wavy (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.wavy",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [164] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.75,
+        "reasoning": "Severe waviness can be inferred from distortions in patterns, reflections, or straight lines (like baseboards). However, subtle waves are hard to detect and confirm without specific lighting or a physical level.",
+        "threshold": 0.65
+      },
+      {
+        "id": "165",
+        "text": "Is there loose debris present, such as sand, pebbles, or grit on the surface (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.sandy",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [165] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "Loose debris such as sand, pebbles, or grit is directly observable and can be easily and reliably identified in a clear, sufficiently high-resolution photograph of the surface.",
+        "threshold": 0.8
+      },
+      {
+        "id": "166",
+        "text": "Can you detect any fine, hairline cracks in the concrete or subfloor (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.hairlineCracks",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [166] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_possible",
+        "llm_confidence": 0.8,
+        "reasoning": "Hairline cracks are by definition very small. Detecting them is a visual task, but its success is highly dependent on image resolution, focus, and proximity. A general room photo will likely miss them.",
+        "threshold": 0.8
+      },
+      {
+        "id": "167",
+        "text": "Are there any wide or deep cracks visible in the foundation/slab (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.wideCracks",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [167] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.9,
+        "reasoning": "Unlike hairline cracks, wide or deep cracks are significant visual features that are generally easy to spot and reliably identify in a standard photograph that includes the affected area.",
+        "threshold": 0.7
+      },
+      {
+        "id": "168",
+        "text": "Are there any Tackless holes / Busted concrete (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.majorCracks",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [168] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.85,
+        "reasoning": "'Busted concrete' (spalling/chipping) is a clear visual defect. Holes from tackless strips are also visible damage, though they may require a closer view. The combination makes the question reliably answerable with a photo.",
+        "threshold": 0.75
+      },
+      {
+        "id": "169",
+        "text": "Are there any distinctive holes or voids in the flooring surface (ask this question only if the sub floor is Concrete)?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.holes",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "The question text for [169] explicitly states '(ask this question only if the sub floor is Concrete)', which is an option in question [35]."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.9,
+        "reasoning": "The presence of distinctive holes or voids on a flooring surface is a visual attribute that can be directly observed and identified in a clear photograph of the floor.",
+        "threshold": 0.8
+      },
+      {
+        "id": "170",
+        "text": "Is there a visible expansion joint or control joint in this area?",
+        "type": "RADIO",
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "pln_variable": "subFloorCond.expansionJoints",
+        "depends_on": [
+          {
+            "question_id": "35",
+            "equals_any": [
+              "Concrete"
+            ],
+            "llm_reasoning": "Question [170] asks about expansion or control joints, which are features primarily found in concrete slabs, making it dependent on the subfloor material from question [35] being 'Concrete'."
+          }
+        ],
+        "room_type": "",
+        "answerable_by": "vision_reliable",
+        "llm_confidence": 0.95,
+        "reasoning": "Expansion or control joints are distinct visual features, typically appearing as lines or intentional gaps on a surface, making them directly detectable from a photograph that captures the relevant area.",
+        "threshold": 0.85
+      }
+    ]
+  },
+  "rooms": {
+    "Basement": {
+      "1": [
+        {
+          "id": "2",
+          "text": "Is there a walkout (direct entrance) in the basement?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "AccessData.Walkout",
+          "depends_on": [],
+          "room_type": "Basement",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "A walkout (direct entrance) is a visual feature, but a single photo might not capture the entire basement or the specific wall where the entrance is located. Its visibility is dependent on the camera's viewpoint.",
+          "threshold": 0.7
+        }
+      ]
+    },
+    "Kitchen": {
+      "1": [
+        {
+          "id": "87",
+          "text": "How many refrigerators or freezers are there?",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.refrigerators",
+          "depends_on": [],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "This is an object counting task. It is answerable visually, but a single photo may not encompass the entire room where all such appliances are located.",
+          "threshold": 0.6
+        },
+        {
+          "id": "108",
+          "text": "Is there water damage around the kitchen sink?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.sinkWaterDamage",
+          "depends_on": [],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 0.9,
+          "reasoning": "Water damage around a sink typically manifests as visually distinct artifacts like stains, discoloration, or warped materials, which are detectable in a clear photo.",
+          "threshold": 0.7
+        },
+        {
+          "id": "110",
+          "text": "How many stoves are there?",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.stoves",
+          "depends_on": [],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.9,
+          "reasoning": "Counting visible objects is a standard computer vision task. However, it requires a comprehensive view of the relevant areas (e.g., the entire kitchen) to be certain of the total count, which a single photo may not provide.",
+          "threshold": 0.7
+        },
+        {
+          "id": "120",
+          "text": "How many dishwashers are there?",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.dishwashers",
+          "depends_on": [],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.9,
+          "reasoning": "Counting appliances is a visual task. However, ensuring a complete count requires viewing all relevant areas (e.g., all lower cabinets in a kitchen), which a single photo might not provide.",
+          "threshold": 0.7
+        }
+      ],
+      "2": [
+        {
+          "id": "89",
+          "text": "Is the refrigerator built in?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.refrigeratorClearance1",
+          "depends_on": [
+            {
+              "question_id": "87",
+              "equals_any": [
+                "One"
+              ],
+              "llm_reasoning": "This question asks about 'the refrigerator' in the singular, which is appropriate only when there is exactly one."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 0.95,
+          "reasoning": "The distinction between a built-in (flush with cabinetry) and a freestanding refrigerator is a clear visual feature that can be identified from a standard photo of the kitchen.",
+          "threshold": 0.8
+        },
+        {
+          "id": "92",
+          "text": "Is there an icemaker in the first freezer? Is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "No ice maker",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "roomSpecific.iceMakerShutOff1",
+          "depends_on": [
+            {
+              "question_id": "87",
+              "equals_any": [
+                "Two",
+                "One"
+              ],
+              "llm_reasoning": "This question asks about the 'first freezer'. A 'first' freezer exists if there is either one or two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.9,
+          "reasoning": "The presence of an icemaker is visible if the freezer is open. The shut-off valve is often behind the appliance, making it potentially visible but frequently occluded, thus requiring specific views.",
+          "threshold": 0.7
+        },
+        {
+          "id": "93",
+          "text": "Is the first refrigerator built in?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.refrigeratorClearance1",
+          "depends_on": [
+            {
+              "question_id": "87",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "This question asks about the 'first refrigerator' in a context where a separate question ([89]) exists for a single refrigerator. Thus, it applies when there are two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "Whether a refrigerator is built-in or freestanding is determined by its visual integration with the surrounding cabinetry, which is a primary and clearly observable feature in a standard photo.",
+          "threshold": 0.8
+        },
+        {
+          "id": "95",
+          "text": "Is there an icemaker in the second freezer? Is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "No ice maker",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "roomSpecific.iceMakerShutOff2",
+          "depends_on": [
+            {
+              "question_id": "87",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "This question specifically asks about the 'second freezer', which only exists if there are two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.9,
+          "reasoning": "The presence of an icemaker requires an interior view of the freezer. The shut-off valve is likely behind the appliance, requiring a specific, often difficult, view to capture.",
+          "threshold": 0.7
+        },
+        {
+          "id": "96",
+          "text": "Is the second refrigerator built in?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.refrigeratorClearance2",
+          "depends_on": [
+            {
+              "question_id": "87",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "This question specifically asks about the 'second refrigerator', which only exists if there are two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "The visual integration of the refrigerator with cabinetry determines if it's built-in, a characteristic that is easily and reliably identified in a photo.",
+          "threshold": 0.8
+        },
+        {
+          "id": "109",
+          "text": "Is there water damage around dish washer?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.dishwasherWaterDamage",
+          "depends_on": [
+            {
+              "question_id": "120",
+              "equals_any": [
+                "Two",
+                "One"
+              ],
+              "llm_reasoning": "This question about water damage around a dishwasher is only relevant if there is at least one dishwasher."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.9,
+          "reasoning": "While water damage on the floor or cabinets around a dishwasher is visible, damage originating from underneath the unit would be occluded. A photo can only provide a partial answer.",
+          "threshold": 0.6
+        },
+        {
+          "id": "114",
+          "text": "Is this the first stove gas? If so, is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "Not a gas stove",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "roomSpecific.gasStoveShutOff1",
+          "depends_on": [
+            {
+              "question_id": "110",
+              "equals_any": [
+                "Two",
+                "One"
+              ],
+              "llm_reasoning": "This question asks about the 'first stove'. A 'first' stove exists if there is either one or two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.8,
+          "reasoning": "Identifying the stove type (gas vs. electric) is usually possible from a photo. However, locating the gas shut-off valve is highly dependent on the camera angle and whether it's occluded by the appliance or cabinetry.",
+          "threshold": 0.6
+        },
+        {
+          "id": "115",
+          "text": "Is the first stove built in?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.stoveClearance1",
+          "depends_on": [
+            {
+              "question_id": "110",
+              "equals_any": [
+                "Two",
+                "One"
+              ],
+              "llm_reasoning": "This question asks about the 'first stove'. A 'first' stove exists if there is either one or two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "The distinction between a built-in appliance and a freestanding one is a matter of visual form and its integration with surrounding cabinetry, which is clearly observable in a standard photo of the appliance.",
+          "threshold": 0.8
+        },
+        {
+          "id": "117",
+          "text": "Is this the second stove gas? If so, is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "Not a gas stove",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "roomSpecific.gasStoveShutOff2",
+          "depends_on": [
+            {
+              "question_id": "110",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "This question specifically asks about the 'second stove', which only exists if there are two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.8,
+          "reasoning": "Similar to identifying the first stove's type and shut-off, this is a visual task but depends on having a clear view of the second stove and its connections, which may be occluded or out of frame.",
+          "threshold": 0.6
+        },
+        {
+          "id": "118",
+          "text": "Is the second stove built in?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.StoveClearance2",
+          "depends_on": [
+            {
+              "question_id": "110",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "This question specifically asks about the 'second stove', which only exists if there are two."
+            }
+          ],
+          "room_type": "Kitchen",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "Just like for the first stove, determining if a second stove is built-in is based on its visual relationship with the surrounding cabinetry, a task well-suited for photo analysis, assuming the stove is visible.",
+          "threshold": 0.8
+        }
+      ]
+    },
+    "Laundry": {
+      "1": [
+        {
+          "id": "98",
+          "text": "How many washers are there?",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.washers",
+          "depends_on": [],
+          "room_type": "Laundry",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "Counting large, distinct appliances like washing machines is a straightforward and reliable task from a photo that captures the relevant area.",
+          "threshold": 0.8
+        },
+        {
+          "id": "100",
+          "text": "How many dryers are there?",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.dryers",
+          "depends_on": [],
+          "room_type": "Laundry",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 0.95,
+          "reasoning": "Counting large, distinct appliances like dryers is a standard and reliable computer vision task, assuming the items are in the photo's frame.",
+          "threshold": 0.8
+        },
+        {
+          "id": "104",
+          "text": "How many laundry tubs are there?",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.laundryTubs",
+          "depends_on": [],
+          "room_type": "Laundry",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 0.95,
+          "reasoning": "Counting large, distinct fixtures like laundry tubs is a standard and reliable computer vision task, provided they are in the camera's view.",
+          "threshold": 0.8
+        }
+      ],
+      "2": [
+        {
+          "id": "99",
+          "text": "Is there water damage near the washing machine?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.washerWaterDamage",
+          "depends_on": [
+            {
+              "question_id": "98",
+              "equals_any": [
+                "Two",
+                "One"
+              ],
+              "llm_reasoning": "Question [99] asks about water damage near a washing machine, which is only relevant if one or more washing machines exist. It should not be asked if the answer to [98] is 'None'."
+            }
+          ],
+          "room_type": "Laundry",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.9,
+          "reasoning": "Water damage manifests visually (stains, warping), but it can be subtle or occluded by the washing machine itself, requiring specific angles, good lighting, and high resolution to detect confidently.",
+          "threshold": 0.6
+        },
+        {
+          "id": "101",
+          "text": "Is this a gas dryer? If so, is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "Not a gas dryer",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "roomSpecific.dryerShutOff1",
+          "depends_on": [
+            {
+              "question_id": "100",
+              "equals_any": [
+                "One"
+              ],
+              "llm_reasoning": "Question [101] 'Is this a gas dryer?' is phrased for a single dryer scenario. It should only be asked if the answer to [100] is 'One'."
+            }
+          ],
+          "room_type": "Laundry",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.95,
+          "reasoning": "Identifying a dryer's energy source (gas vs. electric) and its shut-off valve requires a clear view of the connections on the back, which are often occluded in a standard photo.",
+          "threshold": 0.7
+        },
+        {
+          "id": "102",
+          "text": "Is this first dryer a gas dryer? If so, is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "Not a gas dryer",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "roomSpecific.dryerShutOff1",
+          "depends_on": [
+            {
+              "question_id": "100",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "Question [102] asks about the 'first dryer', which implies a multi-dryer setup. Since a separate question exists for the 'second dryer' ([103]), this question is intended for when there are exactly two dryers."
+            }
+          ],
+          "room_type": "Laundry",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.95,
+          "reasoning": "Identifying a specific dryer's energy source and shut-off valve requires a clear view of its unique connections, which are often occluded or not visible in a general photo.",
+          "threshold": 0.7
+        },
+        {
+          "id": "103",
+          "text": "Is this second dryer a gas dryer? If so, is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "Not a gas dryer",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "roomSpecific.dryerShutOff2",
+          "depends_on": [
+            {
+              "question_id": "100",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "Question [103] specifically asks about the 'second dryer', which only exists if the answer to [100] is 'Two'."
+            }
+          ],
+          "room_type": "Laundry",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.95,
+          "reasoning": "Identifying a specific dryer's energy source and shut-off valve requires a clear view of its unique connections, which are often occluded or not visible in a general photo.",
+          "threshold": 0.7
+        },
+        {
+          "id": "105",
+          "text": "Does the laundry tub have a shut off?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.laundryTubShutOff1",
+          "depends_on": [
+            {
+              "question_id": "104",
+              "equals_any": [
+                "One"
+              ],
+              "llm_reasoning": "Question [105] 'Does the laundry tub have a shut off?' is phrased for a single tub scenario. It should only be asked if the answer to [104] is 'One'."
+            }
+          ],
+          "room_type": "Laundry",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.95,
+          "reasoning": "Water shut-off valves for a laundry tub are typically located under or behind the sink and may be occluded or require a specific camera angle to be seen.",
+          "threshold": 0.6
+        },
+        {
+          "id": "106",
+          "text": "Does the first laundry tub have a shut off?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.laundryTubShutOff1",
+          "depends_on": [
+            {
+              "question_id": "104",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "Question [106] asks about the 'first laundry tub', which implies a multi-tub setup. Since a separate question exists for the 'second laundry tub' ([107]), this question is intended for when there are exactly two tubs."
+            }
+          ],
+          "room_type": "Laundry",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.95,
+          "reasoning": "Water shut-off valves for a specific laundry tub are typically located under or behind the sink and may be occluded or require a specific camera angle to be seen.",
+          "threshold": 0.6
+        },
+        {
+          "id": "107",
+          "text": "Does the second laundry tub have a shut off?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.laundryTubShutOff2",
+          "depends_on": [
+            {
+              "question_id": "104",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "Question [107] specifically asks about the 'second laundry tub', which only exists if the answer to [104] is 'Two'."
+            }
+          ],
+          "room_type": "Laundry",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.95,
+          "reasoning": "Water shut-off valves for a specific laundry tub are typically located under or behind the sink and may be occluded or require a specific camera angle to be seen.",
+          "threshold": 0.6
+        }
+      ]
+    },
+    "Bathroom": {
+      "1": [
+        {
+          "id": "125",
+          "text": "How many toilets are there?",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.toilets",
+          "depends_on": [],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "Counting objects in a room can be done from photos, but it may require multiple views or a panoramic shot to ensure the entire space is covered and all items are counted.",
+          "threshold": 0.6
+        },
+        {
+          "id": "130",
+          "text": "Is there water damage around the bathroom sink?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.bathSinkWaterDamage",
+          "depends_on": [],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "Detecting water damage is a visual task, but it requires a clear, well-lit photo of the specific area around the sink and potentially inside the vanity. This may require multiple views.",
+          "threshold": 0.7
+        },
+        {
+          "id": "131",
+          "text": "Is there water damage around the tub/shower?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.showerWaterDamage",
+          "depends_on": [],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "Detecting water damage is a visual task, but it requires clear, well-lit photos of the floor, walls, and ceiling around the tub/shower. This may require multiple views.",
+          "threshold": 0.7
+        },
+        {
+          "id": "132",
+          "text": "Does the tub have legs (if there is one)?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.tubLegs",
+          "depends_on": [],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "Whether a tub has legs (like a clawfoot tub) is a primary design feature. If the tub is visible in a photo, its style is typically clear and can be reliably identified.",
+          "threshold": 0.8
+        },
+        {
+          "id": "133",
+          "text": "Is there a bidet? Is there a shut off?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes no shut off",
+            "Yes with shut off"
+          ],
+          "pln_variable": "misc3.bidet",
+          "depends_on": [],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 0.9,
+          "reasoning": "A bidet is a large, easily identifiable fixture. However, its associated shut-off valve is a small component that may be obscured by the toilet/bidet or require a specific close-up view to identify.",
+          "threshold": 0.7
+        },
+        {
+          "id": "134",
+          "text": "How many pedestal sinks are there? (if any)",
+          "type": "RADIO",
+          "options": [
+            "None",
+            "One",
+            "Two"
+          ],
+          "pln_variable": "roomSpecific.pedestalSinks",
+          "depends_on": [],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "Pedestal sinks are large, distinct objects. Counting them is a straightforward object detection and counting task that can be reliably performed from a photo covering the room.",
+          "threshold": 0.9
+        },
+        {
+          "id": "135",
+          "text": "Is there furnace in the room?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "misc2.furnace",
+          "depends_on": [],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_reliable",
+          "llm_confidence": 1.0,
+          "reasoning": "A furnace is a large, distinct appliance. If it is present in the room, it would be clearly visible and identifiable in a photograph.",
+          "threshold": 0.9
+        }
+      ],
+      "2": [
+        {
+          "id": "126",
+          "text": "Does the toilet have a shut-off?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.toiletShutOff1",
+          "depends_on": [
+            {
+              "question_id": "125",
+              "equals_any": [
+                "One"
+              ],
+              "llm_reasoning": "Question [126] asks about 'the toilet' in the singular, which is only applicable when there is exactly one toilet."
+            }
+          ],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "Observing a shut-off valve requires a clear view of the toilet's water supply line. This area is often hidden behind the toilet or inside a cabinet, making it potentially unobservable without a specific camera angle.",
+          "threshold": 0.7
+        },
+        {
+          "id": "127",
+          "text": "Does the first toilet have a shut-off?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.toiletShutOff1",
+          "depends_on": [
+            {
+              "question_id": "125",
+              "equals_any": [
+                "Two",
+                "One"
+              ],
+              "llm_reasoning": "Question [127] asks about 'the first toilet', which only exists if there is at least one toilet present."
+            }
+          ],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "Observing a shut-off valve requires a clear view of the toilet's water supply line. This area is often hidden behind the toilet or inside a cabinet, making it potentially unobservable without a specific camera angle.",
+          "threshold": 0.7
+        },
+        {
+          "id": "128",
+          "text": "Does the second toilet have a shut-off?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.toiletShutOff2",
+          "depends_on": [
+            {
+              "question_id": "125",
+              "equals_any": [
+                "Two"
+              ],
+              "llm_reasoning": "Question [128] asks about 'the second toilet', which only exists if there are two toilets."
+            }
+          ],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "Observing a shut-off valve requires a clear view of the toilet's water supply line. This area is often hidden behind the toilet or inside a cabinet, making it potentially unobservable without a specific camera angle.",
+          "threshold": 0.7
+        },
+        {
+          "id": "129",
+          "text": "Is there water damage around the toilet?",
+          "type": "RADIO",
+          "options": [
+            "No",
+            "Yes"
+          ],
+          "pln_variable": "roomSpecific.toiletWaterDamage",
+          "depends_on": [
+            {
+              "question_id": "125",
+              "equals_any": [
+                "Two",
+                "One"
+              ],
+              "llm_reasoning": "Question [129] asks about water damage 'around the toilet', which is only possible if at least one toilet exists."
+            }
+          ],
+          "room_type": "Bathroom",
+          "answerable_by": "vision_possible",
+          "llm_confidence": 1.0,
+          "reasoning": "Detecting water damage is a visual task, but it requires a clear, well-lit photo of the specific area. Damage can be subtle or the area might be occluded or in shadow.",
+          "threshold": 0.7
+        }
+      ]
+    }
+  }
+}
